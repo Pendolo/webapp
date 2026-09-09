@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Pendolo webapp
 
-## Getting Started
+SaaS web de controle de ponto para pequenas equipes. Stack: Next.js (App Router), TypeScript, Tailwind, shadcn/ui, Drizzle, Supabase Postgres, Vercel.
 
-First, run the development server:
+Repositório: [github.com/Pendolo/webapp](https://github.com/Pendolo/webapp)
+
+## Requisitos
+
+- Node.js 20+
+- pnpm 11+
+- Projeto Supabase (Postgres) para persistência
+
+## Setup local
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+cp .env.example .env.local
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Preencha `DATABASE_URL` e os demais secrets em `.env.local` antes de migrations ou autenticação.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Script | Uso |
+|---|---|
+| `pnpm dev` | Servidor de desenvolvimento |
+| `pnpm build` | Build de produção |
+| `pnpm test` | Testes de domínio (Vitest) |
+| `pnpm lint` | ESLint |
+| `pnpm db:generate` | Gerar migrations Drizzle |
+| `pnpm db:migrate` | Aplicar migrations |
 
-## Learn More
+## Estrutura
 
-To learn more about Next.js, take a look at the following resources:
+```text
+app/(public)     login, cadastro, convite, reset
+app/(app)        área autenticada (ponto, cartão-ponto, painel…)
+app/api          health e cron
+components       UI e shell
+domain           regras de jornada, ponto, fechamento e banco de horas
+server/auth      sessão, senha e convite (first-party)
+server/db        schema e cliente Drizzle
+tests            testes de domínio, sem subir o Next.js
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+A autenticação é da aplicação. Não use Clerk nem Supabase Auth.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Rotas públicas
 
-## Deploy on Vercel
+`/`, `/login`, `/cadastro`, `/convite`, `/recuperar-senha`, `/api/health`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+As demais páginas exigem o cookie `pendolo_session` (ainda não emitido; a implementação de auth vem na sequência).
